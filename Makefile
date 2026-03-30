@@ -13,5 +13,11 @@ apply:
 destroy:
 	cd terraform && terraform destroy -auto-approve
 
+install:
+	ansible-galaxy install -r requirements.yml
+
+prepare:
+	ansible-playbook -i inventory.ini playbook.yml
+
 deploy:
-	ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
+	ansible-playbook -i inventory.ini playbook.yml --ask-vault-pass
