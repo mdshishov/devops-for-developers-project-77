@@ -12,3 +12,6 @@ apply:
 
 destroy:
 	cd terraform && terraform destroy -auto-approve
+
+deploy:
+	ansible-playbook -i ansible/inventory.ini ansible/playbook.yml

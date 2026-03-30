@@ -1,8 +1,14 @@
-- hosts: localhost
+- name: Terraform
+  hosts: localhost
   vars_files:
     - group_vars/all/vault.yml
 
   tasks:
+    - name: Run Terraform init
+      command: terraform init
+      args:
+        chdir: ../terraform
+  
     - name: Run Terraform
       command: terraform apply -auto-approve
       args:
@@ -12,3 +18,29 @@
         TF_VAR_yc_folder_id: "{{ yc_folder_id }}"
         TF_VAR_yc_zone: "{{ yc_zone }}"
         TF_VAR_yc_sa_key_file: "{{ yc_sa_key_file }}"
+
+- name:Deploy
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Run application container
+      community.docker.docker_container:
+        name: my_app
+        image: my_app:latest
+        state: started
+        restart_policy: always
+        ports:
+          - "80:80"
