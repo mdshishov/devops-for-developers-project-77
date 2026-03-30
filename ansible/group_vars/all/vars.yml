@@ -1,0 +1,13 @@
+pip_install_packages:
+  - name: docker
+  - name: requests
+
+datadog_api_key: "{{ vault_datadog_api_key }}"
+datadog_site: "datadoghq.eu"
+datadog_checks:
+  http_check:
+    init_config:
+    instances:
+      - name: redmine
+        url: "http://localhost:{{ redmine_port }}"
+        timeout: 5
