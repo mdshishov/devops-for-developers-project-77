@@ -7,3 +7,10 @@ output "load_balancer_ip" {
     ])
   ])
 }
+
+output "web_ips" {
+  value = [
+    for i in yandex_compute_instance.web :
+    i.network_interface[0].nat_ip_address
+  ]
+}

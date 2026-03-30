@@ -7,14 +7,28 @@
 - Make
 - Terraform
 - Ansible
+- JQ
 
 ## Команды
-### Запуск
+### Поднятие инфраструктуры
 ```
-make init
-make apply
+make terraform-init
+make ansible-apply
 ```
-### Удаление
+### Генерация inventory
 ```
-make destroy
+make terraform-output
+make ansible-inventory
+```
+### Установка зависимостей Ansible
+```
+make ansible-init
+```
+### Деплой приложения
+```
+make ansible-deploy
+```
+### Удаление инфраструктуры
+```
+make ansible-destroy
 ```

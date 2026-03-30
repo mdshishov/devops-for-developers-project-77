@@ -16,18 +16,6 @@
       tags: [init]
       args:
         chdir: ../terraform
-      
-    - name: Run Terraform plan
-      command: terraform plan
-      args:
-        chdir: ../terraform
-      register: tf_plan
-      tags: [plan]
-
-    - name: Show Terraform plan
-      debug:
-        var: tf_plan.stdout
-      tags: [plan]
   
     - name: Run Terraform apply
       command: terraform apply -auto-approve
@@ -40,3 +28,34 @@
       tags: [destroy]
       args:
         chdir: ../terraform
+
+- name: Deploy Docker app
+  hosts: web
+  become: true
+  vars_files:
+    - group_vars/all/vault.yml
+
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+      tags: [docker]
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+      tags: [docker]
+
+    - name: Run container
+      community.general.docker_container:
+        name: my-app
+        image: "{{ docker_image }}"
+        state: started
+        restart_policy: always
+        ports:
+          - "80:8080"
+      tags: [deploy]
