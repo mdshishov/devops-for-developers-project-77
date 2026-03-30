@@ -1,23 +1,17 @@
 vault-edit:
 	ansible-vault edit ansible/group_vars/all/vault.yml
 
-init:
+terraform-init:
 	cd terraform && terraform init
 
-plan:
-	cd terraform && terraform plan
+ansible-init:
+	cd ansible && ansible-playbook playbook.yml -t init --ask-vault-pass
 
-apply:
-	cd ansible && ansible-playbook playbook.yml --ask-vault-pass
+ansible-plan:
+	cd ansible && ansible-playbook playbook.yml -t plan --ask-vault-pass
 
-destroy:
-	cd terraform && terraform destroy -auto-approve
+ansible-apply:
+	cd ansible && ansible-playbook playbook.yml -t apply --ask-vault-pass
 
-install:
-	ansible-galaxy install -r requirements.yml
-
-prepare:
-	ansible-playbook -i inventory.ini playbook.yml
-
-deploy:
-	ansible-playbook -i inventory.ini playbook.yml --ask-vault-pass
+ansible-destroy:
+	cd ansible && ansible-playbook playbook.yml -t destroy --ask-vault-pass

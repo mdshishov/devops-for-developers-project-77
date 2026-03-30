@@ -1,7 +1,0 @@
-collections:
-  - name: community.docker
-  - name: datadog.dd
-
-roles:
-  - src: geerlingguy.pip
-  - src: geerlingguy.docker

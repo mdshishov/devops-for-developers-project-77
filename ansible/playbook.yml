@@ -2,55 +2,41 @@
   hosts: localhost
   vars_files:
     - group_vars/all/vault.yml
-  tags: [terraform]
+  environment:
+    TF_VAR_yc_cloud_id: "{{ yc_cloud_id }}"
+    TF_VAR_yc_folder_id: "{{ yc_folder_id }}"
+    TF_VAR_yc_zone: "{{ yc_zone }}"
+    TF_VAR_yc_sa_key_file: "{{ yc_sa_key_file }}"
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
 
   tasks:
     - name: Run Terraform init
       command: terraform init
+      tags: [init]
       args:
         chdir: ../terraform
+      
+    - name: Run Terraform plan
+      command: terraform plan
+      args:
+        chdir: ../terraform
+      register: tf_plan
+      tags: [plan]
+
+    - name: Show Terraform plan
+      debug:
+        var: tf_plan.stdout
+      tags: [plan]
   
-    - name: Run Terraform
+    - name: Run Terraform apply
       command: terraform apply -auto-approve
+      tags: [apply]
       args:
         chdir: ../terraform
-      environment:
-        TF_VAR_yc_cloud_id: "{{ yc_cloud_id }}"
-        TF_VAR_yc_folder_id: "{{ yc_folder_id }}"
-        TF_VAR_yc_zone: "{{ yc_zone }}"
-        TF_VAR_yc_sa_key_file: "{{ yc_sa_key_file }}"
 
-- name: Deploy
-  hosts: webservers
-  become: true
-  tags: [deploy]
-
-  tasks:
-    - name: Install Docker
-      apt:
-        name: docker.io
-        state: present
-        update_cache: yes
-
-    - name: Start Docker service
-      service:
-        name: docker
-        state: started
-        enabled: true
-
-    - name: Run application container
-      community.docker.docker_container:
-        name: my_app
-        image: my_app:latest
-        state: started
-        restart_policy: always
-        ports:
-          - "80:80"
-
-- name: Setup DataDog
-  hosts: webservers
-  become: true
-  tags: [monitoring]
-
-  roles:
-    - datadog.dd.agent
+    - name: Run Terraform destroy
+      command: terraform destroy -auto-approve
+      tags: [destroy]
+      args:
+        chdir: ../terraform
