@@ -1,0 +1,14 @@
+- hosts: localhost
+  vars_files:
+    - group_vars/all/vault.yml
+
+  tasks:
+    - name: Run Terraform
+      command: terraform apply -auto-approve
+      args:
+        chdir: ../terraform
+      environment:
+        TF_VAR_yc_cloud_id: "{{ yc_cloud_id }}"
+        TF_VAR_yc_folder_id: "{{ yc_folder_id }}"
+        TF_VAR_yc_zone: "{{ yc_zone }}"
+        TF_VAR_yc_sa_key_file: "{{ yc_sa_key_file }}"

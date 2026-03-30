@@ -12,5 +12,4 @@ variable "yc_zone" {
 }
 
 variable "yc_sa_key_file" {
-  type = string
 }
